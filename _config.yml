@@ -30,8 +30,8 @@ twitter_username: jekyllrb
 github_username:  frank4o4
 
 # Build settings
-#theme: minima
-theme:jekyll-theme-hacker
+theme: minima
+#theme:jekyll-theme-hacker
 plugins:
   - jekyll-feed
 # Exclude from processing.

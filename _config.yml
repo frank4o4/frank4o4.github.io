@@ -30,7 +30,7 @@ twitter_username: jekyllrb
 github_username:  frank4o4
 
 # Build settings
-theme: jekyll-theme-hacker
+theme: jekyll-theme-midnight
 #theme:jekyll-theme-hacker
 plugins:
   - jekyll-feed

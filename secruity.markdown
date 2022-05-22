@@ -1,5 +1,5 @@
 ---
 layout: page
-title: Network
-permalink: /network/
+title: Secruity
+permalink: /secruity/
 ---

@@ -1,3 +1,3 @@
 # frank4o4.com
 
-[Linux howto's]("linux/index.md")
+[Linux howto's]("http://frank4o4.com/linux/")

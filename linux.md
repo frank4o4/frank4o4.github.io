@@ -1,3 +1,6 @@
-# Linux
+# Linux Howto's
 
-this will have linux stuff
+
+
+* [HAPROXY Sharepoint Setup](/haproxy/)
+

@@ -2,5 +2,5 @@
 
 
 
-* [HAPROXY Sharepoint Setup](/linux/haproxy/)
+* [HAPROXY Sharepoint Setup](/linux/haproxy)
 

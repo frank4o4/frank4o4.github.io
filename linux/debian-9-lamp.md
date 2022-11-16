@@ -40,14 +40,14 @@ To run virtual host in a custom directory you will need to edit httpd.conf add t
 Let says your going to create a user called www and you want to run all your virtual host inside that directory. You will need to add the following to allow apache to serve the web files
 
 ```
-Directory /home/www/
+<Directory /home/username/www/>
 Options Indexes FollowSymLinks
 AllowOverride None
 Require all granted
-/Directory
+</Directory>
 ```
 
-## PHP 7
+## PHP
 
 
 

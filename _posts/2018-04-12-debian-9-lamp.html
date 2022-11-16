@@ -1,0 +1,76 @@
+---
+layout: post
+status: publish
+published: true
+title: Debian 9 LAMP
+author:
+  display_name: frank
+  login: frank
+  email: frank@lan44.com
+  url: ''
+author_login: frank
+author_email: frank@lan44.com
+wordpress_id: 56
+wordpress_url: http://frankmancuso.ca/?p=56
+date: '2018-04-12 14:09:19 -0400'
+date_gmt: '2018-04-12 14:09:19 -0400'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>I finally made the switch from Centos to Debian which I felt has more updated packages and much larger community.</p>
+<p>Here are the steps I took to setup one of my web servers.</p>
+<p>&nbsp;</p>
+<p>MariaDB(MySQL)</p>
+<p>To install MaridaDB on Stretch, just use apt to install the packages.</p>
+<p>&nbsp;</p>
+<p><code>apt-get update</code></p>
+<p><code>apt install mariadb-client mariadb-server</code></p>
+<p>&nbsp;</p>
+<p>After Installation is complete run the following command to secure Mariadb</p>
+<p>&nbsp;</p>
+<p>mysql_secure_installation</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Apache 2</p>
+<p>To install Apache run the following command</p>
+<p><code>apt-get install apache2</code></p>
+<p>&nbsp;</p>
+<p>To run virtual host in a custom directory you will need to edit httpd.conf add the following lines</p>
+<p>&nbsp;</p>
+<p>Let says your going to create a user called www and you want to run all your virtual host inside that directory. You will need to add the following to allow apache to serve the web files</p>
+<p><code><br />
+<Directory /home/www/><br />
+Options Indexes FollowSymLinks<br />
+AllowOverride None<br />
+Require all granted<br />
+</Directory><br />
+</code></p>
+<p>&nbsp;</p>
+<p>PHP 7</p>
+<p>&nbsp;</p>
+<p>To install PHP 7 run the following command</p>
+<p>&nbsp;</p>
+<p><code>apt install php7.0 php7.0-mysql php7.0-pear php7.0-xml</code></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Now Enable MariaDB and Apache to start up when the system boots up.</p>
+<p>&nbsp;</p>
+<p><code>systemctl enable apache2</code></p>
+<p><code>systemctl enable mysql</code></p>
+<p>Lets starts up the services</p>
+<p><code>systemctl start apache2</code></p>
+<p><code>systemctl start mysql</code></p>
+<p>&nbsp;</p>
+<p>Now lets test it works</p>
+<p>Create a file called test.php</p>
+<p>Copy code and paste code</p>
+<p><code><br />
+<?php</code><code><br />
+echo phpinfo();</code><code><br />
+?><br />
+</code><br />
+Save and hit your IP address for example http://192.168.1.2/test.php</p>
+<p>&nbsp;</p>
+<p>You should see all the PHP module you have installed</p>

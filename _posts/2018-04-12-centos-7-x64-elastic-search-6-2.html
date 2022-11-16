@@ -1,0 +1,109 @@
+---
+layout: post
+status: publish
+published: true
+title: Centos 7 x64 Elastic Search 6.2
+author:
+  display_name: frank
+  login: frank
+  email: frank@lan44.com
+  url: ''
+author_login: frank
+author_email: frank@lan44.com
+wordpress_id: 60
+wordpress_url: http://frankmancuso.ca/?p=60
+date: '2018-04-12 14:13:23 -0400'
+date_gmt: '2018-04-12 14:13:23 -0400'
+categories:
+- Linux
+tags: []
+comments: []
+---
+<p>In my development environment I have been playing around with Elastic search and have to say it is pretty neat how you can centralize your windows logs and view them on Kibanna.</p>
+<p>&nbsp;</p>
+<p>If you want to install here are the steps I took.</p>
+<p>&nbsp;</p>
+<p>I installed Centos 7 x64 with the minimum installation</p>
+<p>After install I installed the following tools</p>
+<p>&nbsp;</p>
+<p>You will need wget and if you want tools like ifconfig and nano editor.</p>
+<p><code><br />
+yum install nettools nano wget curl<br />
+</code><br />
+We need Java 8 so using yum</p>
+<p><code><br />
+yum install java-1.8.0-openjdk.x86_64<br />
+</code></p>
+<p>&nbsp;</p>
+<p>Now we need to download the public signing key from elastic</p>
+<p><code><br />
+rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch<br />
+</code></p>
+<p>Using your favorite Linux editor</p>
+<p><code><br />
+nano -w /etc/yum.repos.d/elastic.repo<br />
+</code></p>
+<p>Now paste the following</p>
+<p><code><br />
+[elasticsearch-6.x]<br />
+name=Elasticsearch repository for 6.x packages<br />
+baseurl=https://artifacts.elastic.co/packages/6.x/yum<br />
+gpgcheck=1<br />
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch<br />
+enabled=1<br />
+autorefresh=1<br />
+type=rpm-md<br />
+</code><br />
+hit Ctrl X to save</p>
+<p>&nbsp;</p>
+<p>Now lets install elasticsearch</p>
+<p><code><br />
+yum install elasticsearch<br />
+</code></p>
+<p>Running elasticsearch with systemd</p>
+<p><code><br />
+systemctl daemon-reload<br />
+</code></p>
+<p><code><br />
+systemctl enable elasticsearch.service<br />
+</code></p>
+<p>Before starting elasticsearch lets edit the configuration file</p>
+<p>&nbsp;</p>
+<p><code><br />
+nano -w&nbsp; /etc/elasticsearch/elasticsearch.yml<br />
+</code></p>
+<p>&nbsp;</p>
+<p>Find Line network.host and change it so the # in front is deleted and looks like this</p>
+<p><code><br />
+network.host: 0.0.0.0<br />
+</code></p>
+<p>Hit Ctrl X to save</p>
+<p>This would make elasticsearch listen on any IP address the server is running. In production you can use x-pack to secure the server so only hosts with the username and password can access the elasticsearch</p>
+<p>&nbsp;</p>
+<p>Now Lets start</p>
+<p>elasticsearch</p>
+<p><code><br />
+systemctl start elasticsearch.service<br />
+</code></p>
+<p>Now to verify the service is running you can query with curl</p>
+<p><code><br />
+curl http://127.0.0.1:9200<br />
+</code></p>
+<p>You should get a similar output</p>
+<p><code><br />
+{<br />
+"name" : "esnode-1",<br />
+"version" : {<br />
+"number" : "6.2.1",<br />
+"build_hash" : "7299dc3",<br />
+"build_date" : "2018-02-07T19:34:26.990113Z",<br />
+"build_snapshot" : false,<br />
+"lucene_version" : "7.2.1",<br />
+"minimum_wire_compatibility_version" : "5.6.0",<br />
+"minimum_index_compatibility_version" : "5.0.0"<br />
+},<br />
+"tagline" : "You Know, for Search"<br />
+}<br />
+</code></p>
+<p>&nbsp;</p>
+<p>Now your complete</p>

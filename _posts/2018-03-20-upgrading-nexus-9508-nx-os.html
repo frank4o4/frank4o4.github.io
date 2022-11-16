@@ -1,0 +1,71 @@
+---
+layout: post
+status: publish
+published: true
+title: Upgrading Nexus 9508 NX OS
+author:
+  display_name: frank
+  login: frank
+  email: frank@lan44.com
+  url: ''
+author_login: frank
+author_email: frank@lan44.com
+wordpress_id: 86
+wordpress_url: http://frankmancuso.ca/?p=86
+date: '2018-03-20 14:36:55 -0400'
+date_gmt: '2018-03-20 14:36:55 -0400'
+categories:
+- Network
+tags: []
+comments: []
+---
+<ol>
+<li>
+<div><span style="color: #1f497d;">Backup the running config off of the switch<br />
+</span></div>
+</li>
+<li>
+<div><span style="color: #1f497d;">Verify you have sufficient space on both Sup's; delete older unused file images (not the current image!) if required<br />
+</span></div>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">dir bootflash://sup-local/<br />
+</span></p>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">dir bootflash://sup-standby/<br />
+</span></p>
+</li>
+</ol>
+<ol>
+<li>
+<div><span style="color: #1f497d;">Copy the image to the active Sup.&nbsp; I find FTP the easiest<br />
+</span></div>
+<p style="margin-left: 36pt;"><span style="color: #1f497d; font-family: Lucida Console;">&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: red;">copy <a><span style="color: blue; text-decoration: underline;">ftp://user@<ftp-IP>/nxos.7.0.3.I2.2d.bin</span></a> bootflash: nxos.7.0.3.I2.2d.bin<br />
+</span></span></p>
+</li>
+<li>
+<div><span style="color: #1f497d;">Verify checksum<br />
+</span></div>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">show file bootflash://sup-1/nxos.7.0.3.I2.2d.bin sha256sum<br />
+</span></p>
+<p><span style="color: #1f497d;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Result should be:<br />
+</span></p>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">d02606aba9f95563d1be810f4b5c0795db5c87ee50f5e552dc4de9015264d18b4ab69e3ad51558e19e04046d3c4319c8378b0ad6d493b8cdcb25a12d7c6806f4<br />
+</span></p>
+</li>
+<li>
+<div><span style="color: #1f497d;">Verify install impact<br />
+</span></div>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">show install all impact nxos bootflash:nxos.7.0.3.I2.2d.bin<br />
+</span></p>
+</li>
+<li>
+<div><span style="color: #1f497d;">Save the running config<br />
+</span></div>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">copy running-config startup-config<br />
+</span></p>
+</li>
+<li>
+<div><span style="color: #1f497d;">Launch the install script.&nbsp; For the current version it will be impactful (forced reload)<br />
+</span></div>
+<p style="margin-left: 36pt;"><span style="color: red; font-family: Lucida Console;">install all nxos bootflash:nxos.7.0.3.I2.2d.bin<br />
+</span></p>
+</li>
+</ol>

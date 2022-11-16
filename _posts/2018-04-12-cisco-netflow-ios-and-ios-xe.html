@@ -1,0 +1,72 @@
+---
+layout: post
+status: publish
+published: true
+title: Cisco NetFlow IOS And IOS XE
+author:
+  display_name: frank
+  login: frank
+  email: frank@lan44.com
+  url: ''
+author_login: frank
+author_email: frank@lan44.com
+wordpress_id: 225
+wordpress_url: http://frankmancuso.ca/?p=225
+date: '2018-04-12 13:37:52 -0400'
+date_gmt: '2018-04-12 13:37:52 -0400'
+categories:
+- Network
+tags: []
+comments: []
+---
+<p>Cisco IOS Steps</p>
+<p>Configure the following on the interface you want to capture netflows on. Most cases you would enable on WAN and LAN</p>
+<p><code><br />
+interface gig0/0/0<br />
+description WAN<br />
+ip nbar protocol-discovery<br />
+ip flow ingress</code><br />
+</code></p>
+<p><code><br />
+interface gig0/0/1<br />
+description LAN<br />
+ip nbar protocol-discovery<br />
+ip flow ingress<br />
+</code></p>
+<p>Now Configure your Flow Exporter</p>
+<p>You will export to your netflow server via the LAN interface unless its cloud based.</p>
+<p><code><br />
+ip flow-export source GigabitEthernet0/0/1<br />
+</code><br />
+Change the IP address and the port destination</p>
+<p><code><br />
+ip flow-export destination 192.168.1.5 9999<br />
+</code></p>
+<p>Cisco IOS XE is a lot different to configure NetFlow here are the steps</p>
+<p>First let configure our netflow exporter<br />
+<code><br />
+flow exporter netflow<br />
+destination 192.168.1.5<br />
+source GigabitEthernet0/0/1<br />
+transport udp 9999<br />
+export-protocol netflow-v5<br />
+</code></p>
+<p>Now Let configure the netflow Monitor</p>
+<p><code><br />
+flow monitor netflow<br />
+exporter netflow<br />
+record netflow-original<br />
+</code></p>
+<p>Now configure your interfaces</p>
+<p><code><br />
+Interface gig0/0/0<br />
+description WAN<br />
+ip flow monitor netflow input<br />
+ip nbar protocol-discovery<br />
+</code></p>
+<p><code><br />
+Interface gig0/0/1<br />
+description LAN<br />
+ip flow monitor netflow input<br />
+ip nbar protocol-discovery<br />
+</code></p>

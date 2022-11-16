@@ -1,0 +1,70 @@
+---
+layout: post
+status: publish
+published: true
+title: Configure HP Virtual connect to use Port Channel on Cisco Switch
+author:
+  display_name: frank
+  login: frank
+  email: frank@lan44.com
+  url: ''
+author_login: frank
+author_email: frank@lan44.com
+wordpress_id: 82
+wordpress_url: http://frankmancuso.ca/?p=82
+date: '2018-03-20 14:33:41 -0400'
+date_gmt: '2018-03-20 14:33:41 -0400'
+categories:
+- Network
+tags: []
+comments: []
+---
+<p>Login to Virtual Connect</p>
+<p>Click on <strong>Shared Uplink Sets</strong></p>
+<p><img src="http://frankmancuso.ca/wp-content/uploads/2018/03/032018_1432_ConfigureHP1.png" alt="" /></p>
+<p><img src="http://frankmancuso.ca/wp-content/uploads/2018/03/032018_1432_ConfigureHP2.png" alt="" /></p>
+<p>&nbsp;</p>
+<p>Click on Edit</p>
+<p><img src="http://frankmancuso.ca/wp-content/uploads/2018/03/032018_1432_ConfigureHP3.png" alt="" /></p>
+<p>Make sure Connection Mode is set to Auto</p>
+<p>Add Active Links and click on Save below</p>
+<p><img src="http://frankmancuso.ca/wp-content/uploads/2018/03/032018_1432_ConfigureHP4.png" alt="" /></p>
+<p>On Cisco Switch</p>
+<p>Configure Port Channel Group</p>
+<table style="border-collapse: collapse;" border="0">
+<colgroup>
+<col style="width: 366px;" /></colgroup>
+<tbody valign="top">
+<tr>
+<td style="padding-left: 7px; padding-right: 7px; border: solid 0.5pt;">
+<p>interface Port-channel1</p>
+<p>description blade-chassis</p>
+<p>switchport trunk encapsulation dot1q</p>
+<p>switchport mode trunk</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Assign Ports to Port Channel</p>
+<table style="border-collapse: collapse;" border="0">
+<colgroup>
+<col style="width: 623px;" /></colgroup>
+<tbody valign="top">
+<tr>
+<td style="padding-left: 7px; padding-right: 7px; border: solid 0.5pt;">
+<p>interface GigabitEthernet1/0/1</p>
+<p>description Blade-1</p>
+<p>switchport trunk encapsulation dot1q</p>
+<p>switchport mode trunk</p>
+<p>channel-protocol lacp</p>
+<p>channel-group 1 mode active</p>
+<p>interface GigabitEthernet1/0/2</p>
+<p>description Blade-2</p>
+<p>switchport trunk encapsulation dot1q</p>
+<p>switchport mode trunk</p>
+<p>channel-protocol lacp</p>
+<p>channel-group 1 mode active</p>
+</td>
+</tr>
+</tbody>
+</table>

@@ -1,0 +1,60 @@
+---
+layout: post
+status: publish
+published: true
+title: NSLOOKUP DNS tool
+author:
+  display_name: frank
+  login: frank
+  email: frank@lan44.com
+  url: ''
+author_login: frank
+author_email: frank@lan44.com
+wordpress_id: 67
+wordpress_url: http://frankmancuso.ca/?p=67
+date: '2018-03-20 17:08:12 -0400'
+date_gmt: '2018-03-20 17:08:12 -0400'
+categories:
+- Linux
+- Windows
+tags: []
+comments: []
+---
+<p>I find nslookup a very good tool when trouble shooting DNS records, here are some examples on how it can be used.</p>
+<p>&nbsp;</p>
+<p>Note you can use this on Linux,Windows and MAC.</p>
+<p>If you opened up your command prompt and type in nslookup.</p>
+<p>first let tell nslookup which dns server to query</p>
+<p>server 8.8.8.8</p>
+<p>in my example I'm using google public dns server</p>
+<p>let says you want to find the IP address of example.org</p>
+<p>you would just type in</p>
+<p>example.org</p>
+<p><img class="alignnone size-full wp-image-71" src="http://frankmancuso.ca/wp-content/uploads/2018/03/nslookup1.jpg" alt="" width="226" height="173" /></p>
+<p>&nbsp;</p>
+<p>Now lets say you want to see what dns server example.org uses</p>
+<p>&nbsp;</p>
+<p>type in</p>
+<p>set type=ns</p>
+<p>Now type in example.org</p>
+<p><img class="alignnone size-full wp-image-72" src="http://frankmancuso.ca/wp-content/uploads/2018/03/nslookup2.jpg" alt="" width="414" height="174" /></p>
+<p>&nbsp;</p>
+<p>Let check what mail server gmail.com uses ( example.org didnt have any records so I decided to use gmail)</p>
+<p>type in</p>
+<p>&nbsp;</p>
+<p>set type=mx</p>
+<p>now type in gmail.com</p>
+<p><img class="alignnone size-full wp-image-73" src="http://frankmancuso.ca/wp-content/uploads/2018/03/nslookup3.jpg" alt="" width="552" height="246" /></p>
+<p>&nbsp;</p>
+<p>Let also check what spam filter gmail uses</p>
+<p>type in</p>
+<p>set type=txt</p>
+<p>type in now gmail.com</p>
+<p>&nbsp;</p>
+<p><img class="alignnone size-full wp-image-74" src="http://frankmancuso.ca/wp-content/uploads/2018/03/nslookup4.jpg" alt="" width="455" height="157" /></p>
+<p>&nbsp;</p>
+<p>Other type of records you would most commonly look at are A and CNAME</p>
+<p>set type=CNAME</p>
+<p>set type=A</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>

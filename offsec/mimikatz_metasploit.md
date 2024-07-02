@@ -1,3 +1,17 @@
+---
+title: "frank4o4"
+classes: wide
+header:
+#
+ribbon: black 
+description: "Mimikatz Metasploit"
+categories:
+  - AD
+tags:
+  - AD
+toc: true
+---
+
 # Mimikatz Metasploit
 
 

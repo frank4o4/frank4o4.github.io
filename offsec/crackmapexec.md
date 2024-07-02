@@ -1,3 +1,17 @@
+---
+title: "frank4o4"
+classes: wide
+header:
+#
+ribbon: black 
+description: "Crackmapexec"
+categories:
+  - AD
+tags:
+  - AD
+toc: true
+---
+
 # Crackmapexec
 
 

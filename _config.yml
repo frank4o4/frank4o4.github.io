@@ -1,7 +1,10 @@
 theme: minima
 
+minima:
+  skin: dark
 
 google_analytics: UA-116058068-1
+JEKYLL_ENV=production
 
 author:
   name: Frank Mancuso

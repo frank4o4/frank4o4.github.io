@@ -1,4 +1,3 @@
-# Home
 
 Welcome to my website where I share howtos and notes I've taken that may be helpful.
 

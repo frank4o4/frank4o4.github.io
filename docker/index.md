@@ -1,4 +1,4 @@
-# Docker Reference
+# Docker
 
 
 If you would like to configure your Docker container to access your local network follow the networking setup.

@@ -1,16 +1,5 @@
----
-title: "Home"
-classes: wide
-header:
-#
-ribbon: black 
-description: ""
-categories:
-  - home
-tags:
-  - home
-toc: true
----
+# Home
+
 Welcome to my website where I share howtos and notes I've taken that may be helpful.
 
 

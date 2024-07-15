@@ -10,6 +10,7 @@ search: true
 search_full_content: true
 
 header_pages:
+  - index.md
   - offsec/index.md
   - linux/index.md
   - docker/index.md

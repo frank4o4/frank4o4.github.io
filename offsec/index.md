@@ -1,4 +1,4 @@
-# Offsec Links
+# Offsec
 
 
 ### Active Directory

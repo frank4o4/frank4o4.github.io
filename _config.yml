@@ -1,7 +1,4 @@
-theme: minima
-
-minima:
-  skin: dark
+theme: jekyll-text-theme
 
 google_analytics: UA-116058068-1
 

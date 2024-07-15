@@ -9,6 +9,12 @@ words_per_minute: 170
 search: true 
 search_full_content: true
 
+header_pages:
+  - offsec/index.md
+  - linux/index.md
+  - docker/index.md
+
+
 plugins:
   - jekyll-paginate
   - jekyll-sitemap

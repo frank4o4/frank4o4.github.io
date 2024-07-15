@@ -1,13 +1,11 @@
 theme: minima
 
 
-# Site Settings
-locale: "en-US"
-title: frank4o4
-name: "Frank Mancuso"
-words_per_minute: 170
-search: true 
-search_full_content: true
+google_analytics: UA-NNNNNNNN-N
+
+author:
+  name: Frank Mancuso
+  email: "frank4o4@example.org"
 
 header_pages:
   - index.md

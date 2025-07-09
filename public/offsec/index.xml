@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Offsec on frank4o4</title>
+    <link>https://frank4o4.com/offsec/</link>
+    <description>Recent content in Offsec on frank4o4</description>
+    <generator>Hugo -- 0.147.9</generator>
+    <language>en-us</language>
+    <atom:link href="https://frank4o4.com/offsec/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BloodHound</title>
+      <link>https://frank4o4.com/offsec/bloodhound/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://frank4o4.com/offsec/bloodhound/</guid>
+      <description>&lt;h1 id=&#34;collector-on-the-machine-using-sharphoundexe&#34;&gt;Collector on the machine using SharpHound.exe&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors&#34;&gt;https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors&lt;/a&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;.\SharpHound.exe -c all -d active.htb -SearchForest
+.\SharpHound.exe --EncryptZip --ZipFilename export.zip
+.\SharpHound.exe -c all,GPOLocalGroup
+.\SharpHound.exe -c all --LdapUsername &amp;lt;UserName&amp;gt; --LdapPassword &amp;lt;Password&amp;gt; --JSONFolder &amp;lt;PathToFile&amp;gt;
+.\SharpHound.exe -c all -d active.htb --LdapUsername &amp;lt;UserName&amp;gt; --LdapPassword &amp;lt;Password&amp;gt; --domaincontroller 10.10.10.100
+.\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\Windows\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23
+.\SharpHound.exe -c all,GPOLocalGroup --searchforest
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;collector-on-the-machine-using-powershell&#34;&gt;Collector on the machine using Powershell&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1&#34;&gt;https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1&lt;/a&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Invoke-BloodHound -SearchForest -CSVFolder C:\Users\Public
+Invoke-BloodHound -CollectionMethod All  -LDAPUser &amp;lt;UserName&amp;gt; -LDAPPass &amp;lt;Password&amp;gt; -OutputDirectory &amp;lt;PathToFile&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;remotely-via-bloodhound-python&#34;&gt;Remotely via BloodHound Python&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/fox-it/BloodHound.py&#34;&gt;https://github.com/fox-it/BloodHound.py&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

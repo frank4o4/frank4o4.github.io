@@ -1,0 +1,8 @@
+baseURL = 'https://frank4o4.com/'
+languageCode = 'en-us'
+title = 'frank4o4'
+theme = 'PaperMod'
+sectionPagesMenu = 'main'
+
+[params]
+ disableKinds = ["section"]

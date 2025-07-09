@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>HAPROXY | frank4o4</title>
+<meta name="keywords" content="">
+<meta name="description" content="HA Proxy Sharepoint
+This is a howto guide on using HA Proxy as a load balancer for Sharepoint
+Using apt to install haproxy
+apt update
+apt install haproxy haproxyctl
+haproxy.conf
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+    maxconn 3000
+     nbproc 1
+        nbthread 4
+        cpu-map auto:1/1-4 0-3
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # Default ciphers to use on SSL-enabled listening sockets.
+    # For more information, see ciphers(1SSL). This list is from:
+    #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+    # An alternative list with additional directives can be obtained from
+    #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
+    ssl-default-bind-ciphers ECDH&#43;AESGCM:DH&#43;AESGCM:ECDH&#43;AES256:DH&#43;AES256:ECDH&#43;AES128:DH&#43;AES:RSA&#43;AESGCM:RSA&#43;AES:!aNULL:!MD5:!DSS
+    ssl-default-bind-options no-sslv3
+
+defaults
+    log    global
+    mode    http
+    option    httplog
+    option    dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+
+backend sharepoint
+    fullconn   3000
+        balance leastconn
+        option redispatch
+        cookie SERVERID insert nocache
+        server spweb1      192.168.x.x:80  cookie spweb1 weight 30 check minconn 100 maxconn 1500
+        server spweb2      192.168.x.x:80  cookie spweb2 weight 30 check minconn 100 maxconn 1500
+
+frontend httpid
+    maxconn 3000
+        bind 192.168.x.x:80
+        acl hosts_sharepoint hdr_end(host) -i intranet.example.com
+        acl hosts_sharepoint hdr_end(host) -i intranet.example:80
+     acl hosts_sharepoint hdr_end(host) -i teamsite.example.com
+        acl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80
+    use_backend sharepoint if hosts_sharepoint
+        default_backend sharepoint
+    option forwardfor
+
+
+
+frontend stats
+    bind 192.168.x.x:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    #stats admin if LOCALHOST
+Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers">
+<meta name="author" content="">
+<link rel="canonical" href="https://frank4o4.com/linux/haproxy/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://frank4o4.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://frank4o4.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://frank4o4.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://frank4o4.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://frank4o4.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://frank4o4.com/linux/haproxy/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://frank4o4.com/linux/haproxy/">
+  <meta property="og:site_name" content="frank4o4">
+  <meta property="og:title" content="HAPROXY">
+  <meta property="og:description" content="HA Proxy Sharepoint This is a howto guide on using HA Proxy as a load balancer for Sharepoint
+Using apt to install haproxy
+apt updateapt install haproxy haproxyctl haproxy.conf
+globallog /dev/log local0log /dev/log local1 noticechroot /var/lib/haproxystats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listenersstats timeout 30suser haproxygroup haproxydaemonmaxconn 3000nbproc 1nbthread 4cpu-map auto:1/1-4 0-3# Default SSL material locationsca-base /etc/ssl/certscrt-base /etc/ssl/private# Default ciphers to use on SSL-enabled listening sockets.# For more information, see ciphers(1SSL). This list is from:# https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/# An alternative list with additional directives can be obtained from# https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxyssl-default-bind-ciphers ECDH&#43;AESGCM:DH&#43;AESGCM:ECDH&#43;AES256:DH&#43;AES256:ECDH&#43;AES128:DH&#43;AES:RSA&#43;AESGCM:RSA&#43;AES:!aNULL:!MD5:!DSSssl-default-bind-options no-sslv3defaultslog globalmode httpoption httplogoption dontlognulltimeout connect 5000timeout client 50000timeout server 50000errorfile 400 /etc/haproxy/errors/400.httperrorfile 403 /etc/haproxy/errors/403.httperrorfile 408 /etc/haproxy/errors/408.httperrorfile 500 /etc/haproxy/errors/500.httperrorfile 502 /etc/haproxy/errors/502.httperrorfile 503 /etc/haproxy/errors/503.httperrorfile 504 /etc/haproxy/errors/504.httpbackend sharepointfullconn 3000balance leastconnoption redispatchcookie SERVERID insert nocacheserver spweb1 192.168.x.x:80 cookie spweb1 weight 30 check minconn 100 maxconn 1500server spweb2 192.168.x.x:80 cookie spweb2 weight 30 check minconn 100 maxconn 1500frontend httpidmaxconn 3000bind 192.168.x.x:80acl hosts_sharepoint hdr_end(host) -i intranet.example.comacl hosts_sharepoint hdr_end(host) -i intranet.example:80acl hosts_sharepoint hdr_end(host) -i teamsite.example.comacl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80use_backend sharepoint if hosts_sharepointdefault_backend sharepointoption forwardforfrontend statsbind 192.168.x.x:8404stats enablestats uri /statsstats refresh 10s#stats admin if LOCALHOST Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HAPROXY">
+<meta name="twitter:description" content="HA Proxy Sharepoint
+This is a howto guide on using HA Proxy as a load balancer for Sharepoint
+Using apt to install haproxy
+apt update
+apt install haproxy haproxyctl
+haproxy.conf
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+    maxconn 3000
+     nbproc 1
+        nbthread 4
+        cpu-map auto:1/1-4 0-3
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # Default ciphers to use on SSL-enabled listening sockets.
+    # For more information, see ciphers(1SSL). This list is from:
+    #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+    # An alternative list with additional directives can be obtained from
+    #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
+    ssl-default-bind-ciphers ECDH&#43;AESGCM:DH&#43;AESGCM:ECDH&#43;AES256:DH&#43;AES256:ECDH&#43;AES128:DH&#43;AES:RSA&#43;AESGCM:RSA&#43;AES:!aNULL:!MD5:!DSS
+    ssl-default-bind-options no-sslv3
+
+defaults
+    log    global
+    mode    http
+    option    httplog
+    option    dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+
+backend sharepoint
+    fullconn   3000
+        balance leastconn
+        option redispatch
+        cookie SERVERID insert nocache
+        server spweb1      192.168.x.x:80  cookie spweb1 weight 30 check minconn 100 maxconn 1500
+        server spweb2      192.168.x.x:80  cookie spweb2 weight 30 check minconn 100 maxconn 1500
+
+frontend httpid
+    maxconn 3000
+        bind 192.168.x.x:80
+        acl hosts_sharepoint hdr_end(host) -i intranet.example.com
+        acl hosts_sharepoint hdr_end(host) -i intranet.example:80
+     acl hosts_sharepoint hdr_end(host) -i teamsite.example.com
+        acl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80
+    use_backend sharepoint if hosts_sharepoint
+        default_backend sharepoint
+    option forwardfor
+
+
+
+frontend stats
+    bind 192.168.x.x:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    #stats admin if LOCALHOST
+Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Linux",
+      "item": "https://frank4o4.com/linux/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "HAPROXY",
+      "item": "https://frank4o4.com/linux/haproxy/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "HAPROXY",
+  "name": "HAPROXY",
+  "description": "HA Proxy Sharepoint This is a howto guide on using HA Proxy as a load balancer for Sharepoint\nUsing apt to install haproxy\napt update\rapt install haproxy haproxyctl haproxy.conf\nglobal\rlog /dev/log local0\rlog /dev/log local1 notice\rchroot /var/lib/haproxy\rstats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners\rstats timeout 30s\ruser haproxy\rgroup haproxy\rdaemon\rmaxconn 3000\rnbproc 1\rnbthread 4\rcpu-map auto:1/1-4 0-3\r# Default SSL material locations\rca-base /etc/ssl/certs\rcrt-base /etc/ssl/private\r# Default ciphers to use on SSL-enabled listening sockets.\r# For more information, see ciphers(1SSL). This list is from:\r# https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/\r# An alternative list with additional directives can be obtained from\r# https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy\rssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS\rssl-default-bind-options no-sslv3\rdefaults\rlog global\rmode http\roption httplog\roption dontlognull\rtimeout connect 5000\rtimeout client 50000\rtimeout server 50000\rerrorfile 400 /etc/haproxy/errors/400.http\rerrorfile 403 /etc/haproxy/errors/403.http\rerrorfile 408 /etc/haproxy/errors/408.http\rerrorfile 500 /etc/haproxy/errors/500.http\rerrorfile 502 /etc/haproxy/errors/502.http\rerrorfile 503 /etc/haproxy/errors/503.http\rerrorfile 504 /etc/haproxy/errors/504.http\rbackend sharepoint\rfullconn 3000\rbalance leastconn\roption redispatch\rcookie SERVERID insert nocache\rserver spweb1 192.168.x.x:80 cookie spweb1 weight 30 check minconn 100 maxconn 1500\rserver spweb2 192.168.x.x:80 cookie spweb2 weight 30 check minconn 100 maxconn 1500\rfrontend httpid\rmaxconn 3000\rbind 192.168.x.x:80\racl hosts_sharepoint hdr_end(host) -i intranet.example.com\racl hosts_sharepoint hdr_end(host) -i intranet.example:80\racl hosts_sharepoint hdr_end(host) -i teamsite.example.com\racl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80\ruse_backend sharepoint if hosts_sharepoint\rdefault_backend sharepoint\roption forwardfor\rfrontend stats\rbind 192.168.x.x:8404\rstats enable\rstats uri /stats\rstats refresh 10s\r#stats admin if LOCALHOST Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "HA Proxy Sharepoint This is a howto guide on using HA Proxy as a load balancer for Sharepoint\nUsing apt to install haproxy\napt update\rapt install haproxy haproxyctl haproxy.conf\nglobal\rlog /dev/log local0\rlog /dev/log local1 notice\rchroot /var/lib/haproxy\rstats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners\rstats timeout 30s\ruser haproxy\rgroup haproxy\rdaemon\rmaxconn 3000\rnbproc 1\rnbthread 4\rcpu-map auto:1/1-4 0-3\r# Default SSL material locations\rca-base /etc/ssl/certs\rcrt-base /etc/ssl/private\r# Default ciphers to use on SSL-enabled listening sockets.\r# For more information, see ciphers(1SSL). This list is from:\r# https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/\r# An alternative list with additional directives can be obtained from\r# https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy\rssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS\rssl-default-bind-options no-sslv3\rdefaults\rlog global\rmode http\roption httplog\roption dontlognull\rtimeout connect 5000\rtimeout client 50000\rtimeout server 50000\rerrorfile 400 /etc/haproxy/errors/400.http\rerrorfile 403 /etc/haproxy/errors/403.http\rerrorfile 408 /etc/haproxy/errors/408.http\rerrorfile 500 /etc/haproxy/errors/500.http\rerrorfile 502 /etc/haproxy/errors/502.http\rerrorfile 503 /etc/haproxy/errors/503.http\rerrorfile 504 /etc/haproxy/errors/504.http\rbackend sharepoint\rfullconn 3000\rbalance leastconn\roption redispatch\rcookie SERVERID insert nocache\rserver spweb1 192.168.x.x:80 cookie spweb1 weight 30 check minconn 100 maxconn 1500\rserver spweb2 192.168.x.x:80 cookie spweb2 weight 30 check minconn 100 maxconn 1500\rfrontend httpid\rmaxconn 3000\rbind 192.168.x.x:80\racl hosts_sharepoint hdr_end(host) -i intranet.example.com\racl hosts_sharepoint hdr_end(host) -i intranet.example:80\racl hosts_sharepoint hdr_end(host) -i teamsite.example.com\racl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80\ruse_backend sharepoint if hosts_sharepoint\rdefault_backend sharepoint\roption forwardfor\rfrontend stats\rbind 192.168.x.x:8404\rstats enable\rstats uri /stats\rstats refresh 10s\r#stats admin if LOCALHOST Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers\napt install keepalived After keepalived is installed we will need to alter some kernel parameters.\nsed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf Similarly, you need to enable HAProxy and Keepalived to bind to non-local IP address, that is to bind to the failover IP address (Floating IP).\necho \"net.ipv4.ip_nonlocal_bind = 1\" \u003e\u003e /etc/sysctl.conf\rReload sysctl settings;\rsysctl -p Configure Keepalived The default configuration file for Keepalived should be /etc/keepalived/keepalived.conf. However, this configuration is not created by default. Create the configuration with the content below;\nnano -w /etc/keepalived/keepalived.conf nlb1 configuration\nglobal_defs {\rnotification_email {\rsupport@example.com # Email address for notifications\r}\rnotification_email_from nlb@example.com # The from address for the notifications\rsmtp_server 192.168.x.x # SMTP server address\rsmtp_connect_timeout 15\r}\rvrrp_script chk_haproxy {\rscript \"/usr/bin/killall -0 haproxy\"\rinterval 2\rweight 2\r}\rvrrp_instance LB_VIP {\rinterface eth0\rstate MASTER\rpriority 100\rvirtual_router_id 51\rsmtp_alert\rauthentication {\rauth_type PASS\rauth_pass somepassword\r}\runicast_src_ip 192.168.x.x # Private IP address of the master haproxy\runicast_peer {\r192.168.x.x # Private IP address of the master haproxy\r}\rvirtual_ipaddress {\r192.168.x.x\r}\rtrack_script {\rchk_haproxy\r}\r} nlb2 configuration\nglobal_defs {\rnotification_email {\rsupport@example.com # Email address for notifications\r}\rnotification_email_from nlb@example.com # The from address for the notifications\rsmtp_server 192.168.x.x # SMTP server address\rsmtp_connect_timeout 15\r}\rvrrp_script chk_haproxy {\rscript \"/usr/bin/killall -0 haproxy\"\rinterval 2\rweight 2\r}\rvrrp_instance LB_VIP {\rinterface eth0\rstate BACKUP\rpriority 100\rvirtual_router_id 51\rsmtp_alert\rauthentication {\rauth_type PASS\rauth_pass somepassword\r}\runicast_src_ip 192.168.x.x # Private IP address of the backup haproxy\runicast_peer {\r192.168.x.x # Private IP address of the master haproxy\r}\rvirtual_ipaddress {\r192.168.x.x\r}\rtrack_script {\rchk_haproxy\r}\r} Now start keepalived on both nodes\nsystemctl enable --now keepalived Needed to install this on both nodes to have killall script\napt install psmisc Using haproxyctl functions\nShow Health of Cluster\nroot@nlb1:/etc/haproxy# haproxyctl show health\r# pxname svname status weight\rsharepoint spweb1 UP 30\rsharepoint spweb2 UP 30\rsharepoint BACKEND UP 60\rhttpid FRONTEND OPEN\rstats FRONTEND OPEN Put one node in Maintenance mode\nroot@brm-nlb1:/etc/haproxy# haproxyctl disable server sharepoint/spweb2 Check health again of cluster to confirm the node is in Maintenance mode.\nroot@brm-nlb1:/etc/haproxy# haproxyctl show health\r# pxname svname status weight\rsharepoint spweb1 UP 30\rsharepoint spweb2 MAINT 30\rsharepoint BACKEND UP 30\rhttpid FRONTEND OPEN\rstats FRONTEND OPEN Disable Maintenance mode.\nroot@brm-nlb1:/etc/haproxy# haproxyctl enable server sharepoint/spweb2 Confirm Maintenance mode is disabled.\nroot@brm-nlb1:/etc/haproxy# haproxyctl show health\r# pxname svname status weight\rsharepoint spweb1 UP 30\rsharepoint spweb2 UP 30\rsharepoint BACKEND UP 60\rhttpid FRONTEND OPEN\rstats FRONTEND OPEN ",
+  "wordCount" : "671",
+  "inLanguage": "en",
+  "datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://frank4o4.com/linux/haproxy/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "frank4o4",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://frank4o4.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://frank4o4.com/" accesskey="h" title="frank4o4 (Alt + H)">frank4o4</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://frank4o4.com/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://frank4o4.com/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://frank4o4.com/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://frank4o4.com/offsec/" title="Offsec">
+                    <span>Offsec</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      HAPROXY
+    </h1>
+    <div class="post-meta">
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="ha-proxy-sharepoint">HA Proxy Sharepoint<a hidden class="anchor" aria-hidden="true" href="#ha-proxy-sharepoint">#</a></h1>
+<p>This is a howto guide on using HA Proxy as a load balancer for Sharepoint</p>
+<p>Using apt to install haproxy</p>
+<pre tabindex="0"><code>apt update
+apt install haproxy haproxyctl
+</code></pre><p>haproxy.conf</p>
+<pre tabindex="0"><code>global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+    maxconn 3000
+     nbproc 1
+        nbthread 4
+        cpu-map auto:1/1-4 0-3
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # Default ciphers to use on SSL-enabled listening sockets.
+    # For more information, see ciphers(1SSL). This list is from:
+    #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+    # An alternative list with additional directives can be obtained from
+    #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
+    ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+    ssl-default-bind-options no-sslv3
+
+defaults
+    log    global
+    mode    http
+    option    httplog
+    option    dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+
+backend sharepoint
+    fullconn   3000
+        balance leastconn
+        option redispatch
+        cookie SERVERID insert nocache
+        server spweb1      192.168.x.x:80  cookie spweb1 weight 30 check minconn 100 maxconn 1500
+        server spweb2      192.168.x.x:80  cookie spweb2 weight 30 check minconn 100 maxconn 1500
+
+frontend httpid
+    maxconn 3000
+        bind 192.168.x.x:80
+        acl hosts_sharepoint hdr_end(host) -i intranet.example.com
+        acl hosts_sharepoint hdr_end(host) -i intranet.example:80
+     acl hosts_sharepoint hdr_end(host) -i teamsite.example.com
+        acl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80
+    use_backend sharepoint if hosts_sharepoint
+        default_backend sharepoint
+    option forwardfor
+
+
+
+frontend stats
+    bind 192.168.x.x:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    #stats admin if LOCALHOST
+</code></pre><p>Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers</p>
+<pre tabindex="0"><code>apt install keepalived
+</code></pre><p>After keepalived is installed we will need to alter some kernel parameters.</p>
+<pre tabindex="0"><code>sed -i &#39;s/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/&#39; /etc/sysctl.conf
+</code></pre><p>Similarly, you need to enable HAProxy and Keepalived to bind to non-local IP address, that is to bind to the failover IP address (Floating IP).</p>
+<pre tabindex="0"><code>echo &#34;net.ipv4.ip_nonlocal_bind = 1&#34; &gt;&gt; /etc/sysctl.conf
+Reload sysctl settings;
+sysctl -p
+</code></pre><p>Configure Keepalived The default configuration file for Keepalived should be /etc/keepalived/keepalived.conf. However, this configuration is not created by default. Create the configuration with the content below;</p>
+<pre tabindex="0"><code>nano -w /etc/keepalived/keepalived.conf
+</code></pre><p>nlb1 configuration</p>
+<pre tabindex="0"><code>global_defs {
+    notification_email {
+        support@example.com     # Email address for notifications
+    }
+    notification_email_from nlb@example.com        # The from address for the notifications
+    smtp_server 192.168.x.x                             # SMTP server address
+    smtp_connect_timeout 15
+}
+
+
+vrrp_script chk_haproxy {
+    script &#34;/usr/bin/killall -0 haproxy&#34;
+    interval 2
+    weight 2
+}
+
+vrrp_instance LB_VIP {
+    interface eth0
+    state MASTER
+    priority 100
+    virtual_router_id 51
+
+    smtp_alert
+
+    authentication {
+        auth_type PASS
+        auth_pass somepassword
+    }
+    unicast_src_ip 192.168.x.x # Private IP address of the master haproxy
+    unicast_peer {
+        192.168.x.x    # Private IP address of the master haproxy
+   }
+
+    virtual_ipaddress {
+        192.168.x.x
+    }
+
+    track_script {
+        chk_haproxy
+    }
+}
+</code></pre><p>nlb2 configuration</p>
+<pre tabindex="0"><code>global_defs {
+    notification_email {
+        support@example.com     # Email address for notifications
+    }
+    notification_email_from nlb@example.com        # The from address for the notifications
+    smtp_server 192.168.x.x                             # SMTP server address
+    smtp_connect_timeout 15
+}
+
+
+vrrp_script chk_haproxy {
+    script &#34;/usr/bin/killall -0 haproxy&#34;
+    interval 2
+    weight 2
+}
+
+vrrp_instance LB_VIP {
+    interface eth0
+    state BACKUP
+    priority 100
+    virtual_router_id 51
+
+    smtp_alert
+
+    authentication {
+        auth_type PASS
+        auth_pass somepassword
+    }
+    unicast_src_ip 192.168.x.x # Private IP address of the backup haproxy
+    unicast_peer {
+        192.168.x.x    # Private IP address of the master haproxy
+   }
+
+    virtual_ipaddress {
+        192.168.x.x
+    }
+
+    track_script {
+        chk_haproxy
+    }
+}
+</code></pre><p>Now start keepalived on both nodes</p>
+<pre tabindex="0"><code>systemctl enable --now keepalived
+</code></pre><p>Needed to install this on both nodes to have killall script</p>
+<pre tabindex="0"><code>apt install psmisc
+</code></pre><p>Using haproxyctl functions</p>
+<p>Show Health of Cluster</p>
+<pre tabindex="0"><code>root@nlb1:/etc/haproxy# haproxyctl show health
+# pxname                       svname                         status  weight
+sharepoint                     spweb1                     UP       30
+sharepoint                     spweb2                     UP       30
+sharepoint                     BACKEND                        UP       60
+httpid                         FRONTEND                       OPEN
+stats                          FRONTEND                       OPEN
+</code></pre><p>Put one node in Maintenance mode</p>
+<pre tabindex="0"><code>root@brm-nlb1:/etc/haproxy# haproxyctl disable server sharepoint/spweb2
+</code></pre><p>Check health again of cluster to confirm the node is in Maintenance mode.</p>
+<pre tabindex="0"><code>root@brm-nlb1:/etc/haproxy# haproxyctl show health
+# pxname                       svname                         status  weight
+sharepoint                     spweb1                     UP       30
+sharepoint                     spweb2                     MAINT    30
+sharepoint                     BACKEND                        UP       30
+httpid                         FRONTEND                       OPEN
+stats                          FRONTEND                       OPEN
+</code></pre><p>Disable Maintenance mode.</p>
+<pre tabindex="0"><code>root@brm-nlb1:/etc/haproxy# haproxyctl enable server sharepoint/spweb2
+</code></pre><p>Confirm Maintenance mode is disabled.</p>
+<pre tabindex="0"><code>root@brm-nlb1:/etc/haproxy# haproxyctl show health
+# pxname                       svname                         status  weight
+sharepoint                     spweb1                     UP       30
+sharepoint                     spweb2                     UP       30
+sharepoint                     BACKEND                        UP       60
+httpid                         FRONTEND                       OPEN
+stats                          FRONTEND                       OPEN
+</code></pre>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://frank4o4.com/">frank4o4</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

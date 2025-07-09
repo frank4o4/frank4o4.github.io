@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>frank4o4</title>
+    <link>https://frank4o4.com/</link>
+    <description>Recent content on frank4o4</description>
+    <generator>Hugo -- 0.147.9</generator>
+    <language>en-us</language>
+    <atom:link href="https://frank4o4.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://frank4o4.com/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://frank4o4.com/about/</guid>
+      <description>&lt;p&gt;Hi, I&amp;rsquo;m Frank Mancuso. I created this website to share my personal notes, technical guides, and troubleshooting tips with others in the cybersecurity and IT community. Whether you&amp;rsquo;re configuring tools, stuck on something specific, or just looking to learn, I hope you&amp;rsquo;ll find something here that helps.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m also a certified offensive security professional, holding the following certifications:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;OSCP (Offensive Security Certified Professional)
+
+OSWE (Offensive Security Web Expert)
+
+OSEP (Offensive Security Experienced Penetration Tester)
+
+OSED (Offensive Security Exploit Developer)
+
+OSCE3 (Offensive Security Certified Expert 3)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I&amp;rsquo;m passionate about offensive security, penetration testing, and always learning something new. Thanks for visiting!&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>BloodHound</title>
+      <link>https://frank4o4.com/offsec/bloodhound/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://frank4o4.com/offsec/bloodhound/</guid>
+      <description>&lt;h1 id=&#34;collector-on-the-machine-using-sharphoundexe&#34;&gt;Collector on the machine using SharpHound.exe&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors&#34;&gt;https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors&lt;/a&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;.\SharpHound.exe -c all -d active.htb -SearchForest
+.\SharpHound.exe --EncryptZip --ZipFilename export.zip
+.\SharpHound.exe -c all,GPOLocalGroup
+.\SharpHound.exe -c all --LdapUsername &amp;lt;UserName&amp;gt; --LdapPassword &amp;lt;Password&amp;gt; --JSONFolder &amp;lt;PathToFile&amp;gt;
+.\SharpHound.exe -c all -d active.htb --LdapUsername &amp;lt;UserName&amp;gt; --LdapPassword &amp;lt;Password&amp;gt; --domaincontroller 10.10.10.100
+.\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\Windows\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23
+.\SharpHound.exe -c all,GPOLocalGroup --searchforest
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;collector-on-the-machine-using-powershell&#34;&gt;Collector on the machine using Powershell&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1&#34;&gt;https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1&lt;/a&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Invoke-BloodHound -SearchForest -CSVFolder C:\Users\Public
+Invoke-BloodHound -CollectionMethod All  -LDAPUser &amp;lt;UserName&amp;gt; -LDAPPass &amp;lt;Password&amp;gt; -OutputDirectory &amp;lt;PathToFile&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;remotely-via-bloodhound-python&#34;&gt;Remotely via BloodHound Python&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/fox-it/BloodHound.py&#34;&gt;https://github.com/fox-it/BloodHound.py&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Contact</title>
+      <link>https://frank4o4.com/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://frank4o4.com/contact/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>HAPROXY</title>
+      <link>https://frank4o4.com/linux/haproxy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://frank4o4.com/linux/haproxy/</guid>
+      <description>&lt;h1 id=&#34;ha-proxy-sharepoint&#34;&gt;HA Proxy Sharepoint&lt;/h1&gt;
+&lt;p&gt;This is a howto guide on using HA Proxy as a load balancer for Sharepoint&lt;/p&gt;
+&lt;p&gt;Using apt to install haproxy&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;apt update
+apt install haproxy haproxyctl
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;haproxy.conf&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+    maxconn 3000
+     nbproc 1
+        nbthread 4
+        cpu-map auto:1/1-4 0-3
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # Default ciphers to use on SSL-enabled listening sockets.
+    # For more information, see ciphers(1SSL). This list is from:
+    #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+    # An alternative list with additional directives can be obtained from
+    #  https://mozilla.github.io/server-side-tls/ssl-config-generator/?server=haproxy
+    ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
+    ssl-default-bind-options no-sslv3
+
+defaults
+    log    global
+    mode    http
+    option    httplog
+    option    dontlognull
+        timeout connect 5000
+        timeout client  50000
+        timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+
+backend sharepoint
+    fullconn   3000
+        balance leastconn
+        option redispatch
+        cookie SERVERID insert nocache
+        server spweb1      192.168.x.x:80  cookie spweb1 weight 30 check minconn 100 maxconn 1500
+        server spweb2      192.168.x.x:80  cookie spweb2 weight 30 check minconn 100 maxconn 1500
+
+frontend httpid
+    maxconn 3000
+        bind 192.168.x.x:80
+        acl hosts_sharepoint hdr_end(host) -i intranet.example.com
+        acl hosts_sharepoint hdr_end(host) -i intranet.example:80
+     acl hosts_sharepoint hdr_end(host) -i teamsite.example.com
+        acl hosts_sharepoint hdr_end(host) -i teamsite.example.com:80
+    use_backend sharepoint if hosts_sharepoint
+        default_backend sharepoint
+    option forwardfor
+
+
+
+frontend stats
+    bind 192.168.x.x:8404
+    stats enable
+    stats uri /stats
+    stats refresh 10s
+    #stats admin if LOCALHOST
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Setup Keepalive to be able have floating virtual IP Addresses between two haproxy servers&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

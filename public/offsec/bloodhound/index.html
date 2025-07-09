@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>BloodHound | frank4o4</title>
+<meta name="keywords" content="">
+<meta name="description" content="Collector on the machine using SharpHound.exe
+https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors
+.\SharpHound.exe -c all -d active.htb -SearchForest
+.\SharpHound.exe --EncryptZip --ZipFilename export.zip
+.\SharpHound.exe -c all,GPOLocalGroup
+.\SharpHound.exe -c all --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --JSONFolder &lt;PathToFile&gt;
+.\SharpHound.exe -c all -d active.htb --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --domaincontroller 10.10.10.100
+.\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\Windows\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23
+.\SharpHound.exe -c all,GPOLocalGroup --searchforest
+Collector on the machine using Powershell
+https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1
+Invoke-BloodHound -SearchForest -CSVFolder C:\Users\Public
+Invoke-BloodHound -CollectionMethod All  -LDAPUser &lt;UserName&gt; -LDAPPass &lt;Password&gt; -OutputDirectory &lt;PathToFile&gt;
+Remotely via BloodHound Python
+https://github.com/fox-it/BloodHound.py">
+<meta name="author" content="">
+<link rel="canonical" href="https://frank4o4.com/offsec/bloodhound/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://frank4o4.com/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://frank4o4.com/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://frank4o4.com/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://frank4o4.com/apple-touch-icon.png">
+<link rel="mask-icon" href="https://frank4o4.com/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://frank4o4.com/offsec/bloodhound/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://frank4o4.com/offsec/bloodhound/">
+  <meta property="og:site_name" content="frank4o4">
+  <meta property="og:title" content="BloodHound">
+  <meta property="og:description" content="Collector on the machine using SharpHound.exe https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors
+.\SharpHound.exe -c all -d active.htb -SearchForest.\SharpHound.exe --EncryptZip --ZipFilename export.zip.\SharpHound.exe -c all,GPOLocalGroup.\SharpHound.exe -c all --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --JSONFolder &lt;PathToFile&gt;.\SharpHound.exe -c all -d active.htb --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --domaincontroller 10.10.10.100.\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\Windows\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23.\SharpHound.exe -c all,GPOLocalGroup --searchforest Collector on the machine using Powershell https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1
+Invoke-BloodHound -SearchForest -CSVFolder C:\Users\PublicInvoke-BloodHound -CollectionMethod All -LDAPUser &lt;UserName&gt; -LDAPPass &lt;Password&gt; -OutputDirectory &lt;PathToFile&gt; Remotely via BloodHound Python https://github.com/fox-it/BloodHound.py">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="offsec">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BloodHound">
+<meta name="twitter:description" content="Collector on the machine using SharpHound.exe
+https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors
+.\SharpHound.exe -c all -d active.htb -SearchForest
+.\SharpHound.exe --EncryptZip --ZipFilename export.zip
+.\SharpHound.exe -c all,GPOLocalGroup
+.\SharpHound.exe -c all --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --JSONFolder &lt;PathToFile&gt;
+.\SharpHound.exe -c all -d active.htb --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --domaincontroller 10.10.10.100
+.\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\Windows\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23
+.\SharpHound.exe -c all,GPOLocalGroup --searchforest
+Collector on the machine using Powershell
+https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1
+Invoke-BloodHound -SearchForest -CSVFolder C:\Users\Public
+Invoke-BloodHound -CollectionMethod All  -LDAPUser &lt;UserName&gt; -LDAPPass &lt;Password&gt; -OutputDirectory &lt;PathToFile&gt;
+Remotely via BloodHound Python
+https://github.com/fox-it/BloodHound.py">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Offsec",
+      "item": "https://frank4o4.com/offsec/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "BloodHound",
+      "item": "https://frank4o4.com/offsec/bloodhound/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "BloodHound",
+  "name": "BloodHound",
+  "description": "Collector on the machine using SharpHound.exe https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors\n.\\SharpHound.exe -c all -d active.htb -SearchForest\r.\\SharpHound.exe --EncryptZip --ZipFilename export.zip\r.\\SharpHound.exe -c all,GPOLocalGroup\r.\\SharpHound.exe -c all --LdapUsername \u0026lt;UserName\u0026gt; --LdapPassword \u0026lt;Password\u0026gt; --JSONFolder \u0026lt;PathToFile\u0026gt;\r.\\SharpHound.exe -c all -d active.htb --LdapUsername \u0026lt;UserName\u0026gt; --LdapPassword \u0026lt;Password\u0026gt; --domaincontroller 10.10.10.100\r.\\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\\Windows\\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23\r.\\SharpHound.exe -c all,GPOLocalGroup --searchforest Collector on the machine using Powershell https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1\nInvoke-BloodHound -SearchForest -CSVFolder C:\\Users\\Public\rInvoke-BloodHound -CollectionMethod All -LDAPUser \u0026lt;UserName\u0026gt; -LDAPPass \u0026lt;Password\u0026gt; -OutputDirectory \u0026lt;PathToFile\u0026gt; Remotely via BloodHound Python https://github.com/fox-it/BloodHound.py\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Collector on the machine using SharpHound.exe https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors\n.\\SharpHound.exe -c all -d active.htb -SearchForest\r.\\SharpHound.exe --EncryptZip --ZipFilename export.zip\r.\\SharpHound.exe -c all,GPOLocalGroup\r.\\SharpHound.exe -c all --LdapUsername --LdapPassword --JSONFolder .\\SharpHound.exe -c all -d active.htb --LdapUsername --LdapPassword --domaincontroller 10.10.10.100\r.\\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\\Windows\\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23\r.\\SharpHound.exe -c all,GPOLocalGroup --searchforest Collector on the machine using Powershell https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1\nInvoke-BloodHound -SearchForest -CSVFolder C:\\Users\\Public\rInvoke-BloodHound -CollectionMethod All -LDAPUser -LDAPPass -OutputDirectory Remotely via BloodHound Python https://github.com/fox-it/BloodHound.py\npip install bloodhound\rbloodhound-python -d lab.local -u rsmith -p Winter2017 -gc LAB2008DC01.lab.local -c all Neo4j Query https://hausec.com/2019/09/09/bloodhound-cypher-cheatsheet/\nVisit URL once Neo4j is started\nhttp://127.0.0.1:7474/browser/\nFind All Users with an SPN/Find all Kerberoastable Users\nMATCH (n:User)WHERE n.hasspn=true RETURN n Find SPNs with keywords (swap SQL with whatever)\nMATCH (u:User) WHERE ANY (x IN u.serviceprincipalnames WHERE toUpper(x) CONTAINS 'SQL')RETURN u Find what groups can reset passwords\nMATCH p=(m:Group)-[r:ForceChangePassword]-\u003e(n:User) RETURN m.name, n.name ORDER BY m.name Find what users have local admin rights\nMATCH p=(m:User)-[r:AdminTo]-\u003e(n:Computer) RETURN m.name, n.name ORDER BY m.name ",
+  "wordCount" : "170",
+  "inLanguage": "en",
+  "datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://frank4o4.com/offsec/bloodhound/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "frank4o4",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://frank4o4.com/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://frank4o4.com/" accesskey="h" title="frank4o4 (Alt + H)">frank4o4</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://frank4o4.com/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://frank4o4.com/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://frank4o4.com/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://frank4o4.com/offsec/" title="Offsec">
+                    <span>Offsec</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      BloodHound
+    </h1>
+    <div class="post-meta">
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="collector-on-the-machine-using-sharphoundexe">Collector on the machine using SharpHound.exe<a hidden class="anchor" aria-hidden="true" href="#collector-on-the-machine-using-sharphoundexe">#</a></h1>
+<p><a href="https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors">https://github.com/BloodHoundAD/BloodHound/tree/master/Collectors</a></p>
+<pre tabindex="0"><code>.\SharpHound.exe -c all -d active.htb -SearchForest
+.\SharpHound.exe --EncryptZip --ZipFilename export.zip
+.\SharpHound.exe -c all,GPOLocalGroup
+.\SharpHound.exe -c all --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --JSONFolder &lt;PathToFile&gt;
+.\SharpHound.exe -c all -d active.htb --LdapUsername &lt;UserName&gt; --LdapPassword &lt;Password&gt; --domaincontroller 10.10.10.100
+.\SharpHound.exe -c all,GPOLocalGroup --outputdirectory C:\Windows\Temp --randomizefilenames --prettyjson --nosavecache --encryptzip --collectallproperties --throttle 10000 --jitter 23
+.\SharpHound.exe -c all,GPOLocalGroup --searchforest
+</code></pre><h1 id="collector-on-the-machine-using-powershell">Collector on the machine using Powershell<a hidden class="anchor" aria-hidden="true" href="#collector-on-the-machine-using-powershell">#</a></h1>
+<p><a href="https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1">https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.ps1</a></p>
+<pre tabindex="0"><code>Invoke-BloodHound -SearchForest -CSVFolder C:\Users\Public
+Invoke-BloodHound -CollectionMethod All  -LDAPUser &lt;UserName&gt; -LDAPPass &lt;Password&gt; -OutputDirectory &lt;PathToFile&gt;
+</code></pre><h2 id="remotely-via-bloodhound-python">Remotely via BloodHound Python<a hidden class="anchor" aria-hidden="true" href="#remotely-via-bloodhound-python">#</a></h2>
+<p><a href="https://github.com/fox-it/BloodHound.py">https://github.com/fox-it/BloodHound.py</a></p>
+<pre tabindex="0"><code>pip install bloodhound
+bloodhound-python -d lab.local -u rsmith -p Winter2017 -gc LAB2008DC01.lab.local -c all
+</code></pre><h1 id="neo4j-query">Neo4j Query<a hidden class="anchor" aria-hidden="true" href="#neo4j-query">#</a></h1>
+<p><a href="https://hausec.com/2019/09/09/bloodhound-cypher-cheatsheet/">https://hausec.com/2019/09/09/bloodhound-cypher-cheatsheet/</a></p>
+<p>Visit URL once Neo4j is started</p>
+<p>http://127.0.0.1:7474/browser/</p>
+<p>Find All Users with an SPN/Find all Kerberoastable Users</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">MATCH</span> (n:<span style="color:#66d9ef">User</span>)<span style="color:#66d9ef">WHERE</span> n.hasspn<span style="color:#f92672">=</span><span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">RETURN</span> n
+</span></span></code></pre></div><p>Find SPNs with keywords (swap SQL with whatever)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">MATCH</span> (u:<span style="color:#66d9ef">User</span>) <span style="color:#66d9ef">WHERE</span> <span style="color:#66d9ef">ANY</span> (x <span style="color:#66d9ef">IN</span> u.serviceprincipalnames <span style="color:#66d9ef">WHERE</span> toUpper(x) <span style="color:#66d9ef">CONTAINS</span> <span style="color:#e6db74">&#39;SQL&#39;</span>)<span style="color:#66d9ef">RETURN</span> u
+</span></span></code></pre></div><p>Find what groups can reset passwords</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">MATCH</span> p<span style="color:#f92672">=</span>(m:<span style="color:#66d9ef">Group</span>)<span style="color:#f92672">-</span>[r:ForceChangePassword]<span style="color:#f92672">-&gt;</span>(n:<span style="color:#66d9ef">User</span>) <span style="color:#66d9ef">RETURN</span> m.name, n.name <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> m.name
+</span></span></code></pre></div><p>Find what users have local admin rights</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-SQL" data-lang="SQL"><span style="display:flex;"><span><span style="color:#66d9ef">MATCH</span> p<span style="color:#f92672">=</span>(m:<span style="color:#66d9ef">User</span>)<span style="color:#f92672">-</span>[r:AdminTo]<span style="color:#f92672">-&gt;</span>(n:Computer) <span style="color:#66d9ef">RETURN</span> m.name, n.name <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> m.name
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://frank4o4.com/">frank4o4</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
